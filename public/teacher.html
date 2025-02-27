@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교사용 손들기 시스템</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>교사용 손들기 시스템</h1>
+    <h2>대기자 명단</h2>
+    <ul id="queue"></ul>
+
+    <script>
+        const socket = io();
+
+        socket.on('update_queue', (queue) => {
+            renderQueue(queue);
+        });
+
+        function renderQueue(queue) {
+            const queueList = document.getElementById('queue');
+            queueList.innerHTML = queue.map(user => `
+                <li id="${user.name}">
+                    ${user.name} 
+                    <button onclick="complete('${user.name}')">완료</button>
+                </li>
+            `).join('');
+        }
+
+        function complete(name) {
+            socket.emit('complete_hand', name);
+            document.getElementById(name)?.remove();
+        }
+    </script>
+</body>
+</html>
+
